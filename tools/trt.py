@@ -5,10 +5,10 @@
 import argparse
 import os
 import shutil
-from loguru import logger
 
 import tensorrt as trt
 import torch
+from loguru import logger
 from torch2trt import torch2trt
 
 from yolox.exp import get_exp
@@ -27,10 +27,8 @@ def make_parser():
         help="please input your experiment description file",
     )
     parser.add_argument("-c", "--ckpt", default=None, type=str, help="ckpt path")
-    parser.add_argument(
-        "-w", '--workspace', type=int, default=32, help='max workspace size in detect'
-    )
-    parser.add_argument("-b", '--batch', type=int, default=1, help='max batch size in detect')
+    parser.add_argument("-w", "--workspace", type=int, default=32, help="max workspace size in detect")
+    parser.add_argument("-b", "--batch", type=int, default=1, help="max batch size in detect")
     return parser
 
 

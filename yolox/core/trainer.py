@@ -4,33 +4,19 @@
 import datetime
 import os
 import time
-from loguru import logger
 
 import torch
+from loguru import logger
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.tensorboard import SummaryWriter
 
 from yolox.data import DataPrefetcher
 from yolox.exp import Exp
-from yolox.utils import (
-    MeterBuffer,
-    ModelEMA,
-    WandbLogger,
-    adjust_status,
-    all_reduce_norm,
-    get_local_rank,
-    get_model_info,
-    get_rank,
-    get_world_size,
-    gpu_mem_usage,
-    is_parallel,
-    load_ckpt,
-    mem_usage,
-    occupy_mem,
-    save_checkpoint,
-    setup_logger,
-    synchronize
-)
+from yolox.utils import (MeterBuffer, ModelEMA, WandbLogger, adjust_status,
+                         all_reduce_norm, get_local_rank, get_model_info,
+                         get_rank, get_world_size, gpu_mem_usage, is_parallel,
+                         load_ckpt, mem_usage, occupy_mem, save_checkpoint,
+                         setup_logger, synchronize)
 
 
 class Trainer:
@@ -133,9 +119,7 @@ class Trainer:
         # model related init
         torch.cuda.set_device(self.local_rank)
         model = self.exp.get_model()
-        logger.info(
-            "Model Summary: {}".format(get_model_info(model, self.exp.test_size))
-        )
+        logger.info("Model Summary: {}".format(get_model_info(model, self.exp.test_size)))
         model.to(self.device)
 
         # solver related init
@@ -157,9 +141,7 @@ class Trainer:
         # max_iter means iters per epoch
         self.max_iter = len(self.train_loader)
 
-        self.lr_scheduler = self.exp.get_lr_scheduler(
-            self.exp.basic_lr_per_img * self.args.batch_size, self.max_iter
-        )
+        self.lr_scheduler = self.exp.get_lr_scheduler(self.exp.basic_lr_per_img * self.args.batch_size, self.max_iter)
         if self.args.occupy:
             occupy_mem(self.local_rank)
 
@@ -172,18 +154,14 @@ class Trainer:
 
         self.model = model
 
-        self.evaluator = self.exp.get_evaluator(
-            batch_size=self.args.batch_size, is_distributed=self.is_distributed
-        )
+        self.evaluator = self.exp.get_evaluator(batch_size=self.args.batch_size, is_distributed=self.is_distributed)
         # Tensorboard and Wandb loggers
         if self.rank == 0:
             if self.args.logger == "tensorboard":
                 self.tblogger = SummaryWriter(os.path.join(self.file_name, "tensorboard"))
             elif self.args.logger == "wandb":
                 self.wandb_logger = WandbLogger.initialize_wandb_logger(
-                    self.args,
-                    self.exp,
-                    self.evaluator.dataloader.dataset
+                    self.args, self.exp, self.evaluator.dataloader.dataset
                 )
             else:
                 raise ValueError("logger must be either 'tensorboard' or 'wandb'")
@@ -192,9 +170,7 @@ class Trainer:
         logger.info("\n{}".format(model))
 
     def after_train(self):
-        logger.info(
-            "Training of experiment is done and the best AP is {:.2f}".format(self.best_ap * 100)
-        )
+        logger.info("Training of experiment is done and the best AP is {:.2f}".format(self.best_ap * 100))
         if self.rank == 0:
             if self.args.logger == "wandb":
                 self.wandb_logger.finish()
@@ -241,14 +217,10 @@ class Trainer:
                 self.epoch + 1, self.max_epoch, self.iter + 1, self.max_iter
             )
             loss_meter = self.meter.get_filtered_meter("loss")
-            loss_str = ", ".join(
-                ["{}: {:.1f}".format(k, v.latest) for k, v in loss_meter.items()]
-            )
+            loss_str = ", ".join(["{}: {:.1f}".format(k, v.latest) for k, v in loss_meter.items()])
 
             time_meter = self.meter.get_filtered_meter("time")
-            time_str = ", ".join(
-                ["{}: {:.3f}s".format(k, v.avg) for k, v in time_meter.items()]
-            )
+            time_str = ", ".join(["{}: {:.3f}s".format(k, v.avg) for k, v in time_meter.items()])
 
             mem_str = "gpu mem: {:.0f}Mb, mem: {:.1f}Gb".format(gpu_mem_usage(), mem_usage())
 
@@ -265,25 +237,19 @@ class Trainer:
 
             if self.rank == 0:
                 if self.args.logger == "tensorboard":
-                    self.tblogger.add_scalar(
-                        "train/lr", self.meter["lr"].latest, self.progress_in_iter)
+                    self.tblogger.add_scalar("train/lr", self.meter["lr"].latest, self.progress_in_iter)
                     for k, v in loss_meter.items():
-                        self.tblogger.add_scalar(
-                            f"train/{k}", v.latest, self.progress_in_iter)
+                        self.tblogger.add_scalar(f"train/{k}", v.latest, self.progress_in_iter)
                 if self.args.logger == "wandb":
                     metrics = {"train/" + k: v.latest for k, v in loss_meter.items()}
-                    metrics.update({
-                        "train/lr": self.meter["lr"].latest
-                    })
+                    metrics.update({"train/lr": self.meter["lr"].latest})
                     self.wandb_logger.log_metrics(metrics, step=self.progress_in_iter)
 
             self.meter.clear_meters()
 
         # random resizing
         if (self.progress_in_iter + 1) % 10 == 0:
-            self.input_size = self.exp.random_resize(
-                self.train_loader, self.epoch, self.rank, self.is_distributed
-            )
+            self.input_size = self.exp.random_resize(self.train_loader, self.epoch, self.rank, self.is_distributed)
 
     @property
     def progress_in_iter(self):
@@ -303,17 +269,9 @@ class Trainer:
             self.optimizer.load_state_dict(ckpt["optimizer"])
             self.best_ap = ckpt.pop("best_ap", 0)
             # resume the training states variables
-            start_epoch = (
-                self.args.start_epoch - 1
-                if self.args.start_epoch is not None
-                else ckpt["start_epoch"]
-            )
+            start_epoch = self.args.start_epoch - 1 if self.args.start_epoch is not None else ckpt["start_epoch"]
             self.start_epoch = start_epoch
-            logger.info(
-                "loaded checkpoint '{}' (epoch {})".format(
-                    self.args.resume, self.start_epoch
-                )
-            )  # noqa
+            logger.info("loaded checkpoint '{}' (epoch {})".format(self.args.resume, self.start_epoch))  # noqa
         else:
             if self.args.ckpt is not None:
                 logger.info("loading checkpoint for fine tuning")
@@ -345,11 +303,13 @@ class Trainer:
                 self.tblogger.add_scalar("val/COCOAP50", ap50, self.epoch + 1)
                 self.tblogger.add_scalar("val/COCOAP50_95", ap50_95, self.epoch + 1)
             if self.args.logger == "wandb":
-                self.wandb_logger.log_metrics({
-                    "val/COCOAP50": ap50,
-                    "val/COCOAP50_95": ap50_95,
-                    "train/epoch": self.epoch + 1,
-                })
+                self.wandb_logger.log_metrics(
+                    {
+                        "val/COCOAP50": ap50,
+                        "val/COCOAP50_95": ap50_95,
+                        "train/epoch": self.epoch + 1,
+                    }
+                )
                 self.wandb_logger.log_images(predictions)
             logger.info("\n" + summary)
         synchronize()
@@ -385,6 +345,6 @@ class Trainer:
                         "epoch": self.epoch + 1,
                         "optimizer": self.optimizer.state_dict(),
                         "best_ap": self.best_ap,
-                        "curr_ap": ap
-                    }
+                        "curr_ap": ap,
+                    },
                 )

@@ -87,10 +87,7 @@ def all_reduce(py_dict, op="sum", group=None):
     if op == "mean":
         flatten_tensor /= world_size
 
-    split_tensors = [
-        x.reshape(shape)
-        for x, shape in zip(torch.split(flatten_tensor, tensor_numels), tensor_shapes)
-    ]
+    split_tensors = [x.reshape(shape) for x, shape in zip(torch.split(flatten_tensor, tensor_numels), tensor_shapes)]
     return OrderedDict({k: v for k, v in zip(py_key, split_tensors)})
 
 

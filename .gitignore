@@ -1,6 +1,8 @@
 ### Linux ###
 *~
 
+**/output/
+
 # user experiments directory
 YOLOX_outputs/
 datasets/
