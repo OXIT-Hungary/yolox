@@ -1,0 +1,20 @@
+defaults:
+  - base
+
+experiment:
+  name: test_experiment
+  out_dir: /home/geri/work/OXIT-Sport_Framework/src/yolox/outputs
+
+model:
+  num_classes: 3
+  depth: 0.67
+  width: 0.75
+
+dataloader:
+  data_dir: /home/geri/work/datasets/wp_dataset/
+  train_ann: train_annotations.coco.json
+  val_ann: val_annotations.coco.json
+  test_ann: test_annotations.coco.json
+
+train:
+  max_epoch: 200
