@@ -2,6 +2,12 @@
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii, Inc. and its affiliates.
 
+CUSTOM_CLASSES = (
+    "people-hat-gate-ball",
+    "waterpolo-ball",
+    "waterpolo-player",
+)
+
 COCO_CLASSES = (
     "person",
     "bicycle",

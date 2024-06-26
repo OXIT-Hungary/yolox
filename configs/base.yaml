@@ -1,0 +1,63 @@
+experiment:
+  name: experiment_name
+  out_dir: null
+  save_result: false
+  visualize: true
+  input: null
+
+model:
+  checkpoint: /home/geri/work/OXIT-Sport_Framework/src/submodules/yolox/checkpoints/yolox-m_finetuned_best.pth
+  num_classes: 80
+  in_channels: [256, 512, 1024]
+  depth: 1.00 # factor of model depth
+  width: 1.00 # factor of model width
+  activation: "silu"
+  mixed_precision: false
+  fuse: false
+  tensor_rt: false
+  tensor_rt_file: null
+  device: cuda
+
+dataloader:
+  num_workers: 4 # If your training process costs a lot of memory, reduce this value.
+  # Actual multiscale ranges: [640 - 5 * 32, 640 + 5 * 32].
+  # To disable multiscale training, set the value to 0.
+  multiscale_range: 5
+  data_dir: null # dir of dataset images, if data_dir is null, this project will use `datasets` dir
+  train_ann: "instances_train2017.json" # name of annotation file for training
+  val_ann: "instances_val2017.json" # name of annotation file for evaluation
+  test_ann: "instances_test2017.json" # name of annotation file for testing
+
+transform:
+  mosaic_prob: 1.0 # prob of applying mosaic augmentation
+  mosaic_scale: [0.1, 2] # mosaic scale range
+
+  enable_mixup: true 
+  mixup_prob: 1.0 # prob of applying mixup augmentation
+  mixup_scale: [0.5, 1.5] # mixup scale range
+
+  flip_prob: 0.5 # prob of applying flip augmentation
+  hsv_prob: 1.0 # prob of applying hsv augmentation
+  translate: 0.1 # translate range, for example, if set to 0.1, the true range is (-0.1, 0.1)
+  degrees: 10.0 # rotation angle range, for example, if set to 2, the true range is (-2, 2)
+  shear: 2.0 # shear angle range, for example, if set to 2, the true range is (-2, 2)
+
+train:
+  warmup_epochs: 5
+  max_epoch: 300
+  warmup_lr: 0 # minimum learning rate during warmup
+  min_lr_ratio: 0.05
+  basic_lr_per_img: 0.01 / 64.0 # learning rate for one image. During training, lr will multiply by batch size.
+  scheduler: "yoloxwarmcos"
+  no_aug_epochs: 15 # last #epoch to close augmentation like mosaic
+  ema: true # apply EMA during training
+  weight_decay: 0.0005 # weight decay of optimizer
+  momentum: 0.9 # momentum of optimizer
+  print_interval: 10
+  eval_interval: 10
+  save_history_ckpt: false # If set to False, yolox will only save the latest and best checkpoints.
+
+inference:
+  output_size: [640, 640]
+  confidence: 0.01 # boxes whose scores are less than this value will be filtered out
+  nms_threshold: 0.65
