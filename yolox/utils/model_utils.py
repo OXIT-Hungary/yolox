@@ -2,14 +2,13 @@
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii Inc. All rights reserved.
 
-import os
 import contextlib
+import os
 from copy import deepcopy
 from typing import Sequence
 
 import torch
 import torch.nn as nn
-
 from yolox.models import YOLOPAFPN, YOLOX, YOLOXHead
 
 __all__ = [

@@ -14,7 +14,6 @@ import random
 
 import cv2
 import numpy as np
-
 from yolox.utils import xyxy2cxcywh
 
 

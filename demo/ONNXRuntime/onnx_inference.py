@@ -7,7 +7,6 @@ import os
 import cv2
 import numpy as np
 import onnxruntime
-
 from yolox.data.data_augment import preproc as preprocess
 from yolox.data.datasets import COCO_CLASSES
 from yolox.utils import demo_postprocess, mkdir, multiclass_nms, vis

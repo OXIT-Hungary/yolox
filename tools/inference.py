@@ -1,16 +1,15 @@
-import hydra
-import time
 import argparse
+import time
 from pathlib import Path
-from omegaconf import DictConfig
 
 import cv2
+import hydra
 import torch
 from loguru import logger
-
+from omegaconf import DictConfig
+from yolox.data.data_augment import ValTransform
 from yolox.data.datasets import CUSTOM_CLASSES
 from yolox.utils import get_model, postprocess, vis
-from yolox.data.data_augment import ValTransform
 
 
 def visual(output, img_info, cls_conf=0.35):

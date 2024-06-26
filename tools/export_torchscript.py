@@ -7,7 +7,6 @@ import os
 
 import torch
 from loguru import logger
-
 from yolox.exp import get_exp
 
 

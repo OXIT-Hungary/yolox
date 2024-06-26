@@ -10,7 +10,6 @@ import warnings
 import torch
 import torch.backends.cudnn as cudnn
 from loguru import logger
-
 from yolox.core import Trainer
 from yolox.exp import Exp, get_exp
 from yolox.tools.train import make_parser

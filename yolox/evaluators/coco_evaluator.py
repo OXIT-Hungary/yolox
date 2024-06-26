@@ -15,7 +15,6 @@ import torch
 from loguru import logger
 from tabulate import tabulate
 from tqdm import tqdm
-
 from yolox.data.datasets import COCO_CLASSES
 from yolox.utils import (gather, is_main_process, postprocess, synchronize,
                          time_synchronized, xyxy2xywh)

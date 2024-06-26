@@ -6,7 +6,6 @@ import unittest
 
 import torch
 from torch import nn
-
 from yolox.exp import get_exp
 from yolox.utils import adjust_status, freeze_module
 

@@ -9,7 +9,6 @@ from typing import Dict, List, Tuple
 import torch
 from tabulate import tabulate
 from torch.nn import Module
-
 from yolox.utils import LRScheduler
 
 

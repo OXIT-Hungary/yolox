@@ -11,7 +11,6 @@ import numpy as np
 import torch
 from loguru import logger
 from tqdm import tqdm
-
 from yolox.utils import (gather, is_main_process, postprocess, synchronize,
                          time_synchronized)
 

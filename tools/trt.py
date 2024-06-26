@@ -10,7 +10,6 @@ import tensorrt as trt
 import torch
 from loguru import logger
 from torch2trt import torch2trt
-
 from yolox.exp import get_exp
 
 

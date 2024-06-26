@@ -12,7 +12,6 @@ import sys
 import cv2
 import numpy as np
 from openvino.inference_engine import IECore
-
 from yolox.data.data_augment import preproc as preprocess
 from yolox.data.datasets import COCO_CLASSES
 from yolox.utils import demo_postprocess, mkdir, multiclass_nms, vis

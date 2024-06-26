@@ -11,7 +11,6 @@ import megengine as mge
 import megengine.functional as F
 from build import build_and_load
 from loguru import logger
-
 from yolox.data.data_augment import preproc as preprocess
 from yolox.data.datasets import COCO_CLASSES
 from yolox.utils import vis
