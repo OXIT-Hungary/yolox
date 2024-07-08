@@ -6,7 +6,7 @@ experiment:
   input: null
 
 model:
-  checkpoint: /home/geri/work/OXIT-Sport_Framework/src/submodules/yolox/checkpoints/yolox-m_finetuned_best.pth
+  checkpoint: src/submodules/yolox/checkpoints/yolox-m_finetuned_best.pth
   num_classes: 80
   in_channels: [256, 512, 1024]
   depth: 1.00 # factor of model depth
