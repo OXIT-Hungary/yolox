@@ -93,8 +93,9 @@ setuptools.setup(
     author="megvii basedet team",
     url="https://github.com/Megvii-BaseDetection/YOLOX",
     package_dir=get_package_dir(),
-    packages=setuptools.find_packages(exclude=("tests", "tools")) + list(get_package_dir().keys()),
-    python_requires=">=3.6",
+    packages=setuptools.find_packages(where=Path(__file__).parent, exclude=("tests", "tools"))
+    + list(get_package_dir().keys()),
+    python_requires=">=3.9",
     install_requires=list(requirements.values()),
     setup_requires=["wheel"],  # avoid building error when pip is not updated
     long_description=get_long_description(),

@@ -23,35 +23,39 @@ __all__ = [
 
 
 def get_model(cfg) -> nn.Module:
-    backbone = YOLOPAFPN(cfg.depth, cfg.width, in_channels=cfg.in_channels, act=cfg.activation)
-    head = YOLOXHead(cfg.num_classes, cfg.width, in_channels=cfg.in_channels, act=cfg.activation)
+    backbone = YOLOPAFPN(cfg.model.depth, cfg.model.width, in_channels=cfg.model.in_channels, act=cfg.model.activation)
+    head = YOLOXHead(
+        cfg.model.num_classes, cfg.model.width, in_channels=cfg.model.in_channels, act=cfg.model.activation
+    )
     model = YOLOX(backbone, head)
 
-    model.to(device=cfg.device)
-    if cfg.mixed_precision:
+    model.to(device=cfg.model.device)
+    if cfg.model.mixed_precision:
         model.half()
 
-    if not cfg.tensor_rt:
-        ckpt = torch.load(cfg.checkpoint, map_location="cpu")
+    if not cfg.model.tensor_rt:
+        ckpt = torch.load(cfg.model.checkpoint, map_location="cpu")
         model.load_state_dict(ckpt["model"])
 
-        if cfg.fuse:
+        if cfg.model.fuse:
             model = fuse_model(model)
 
         decoder = None
 
     else:
-        assert not cfg.fuse, "TensorRT model is not support model fusing!"
+        assert not cfg.model.fuse, "TensorRT model is not support model fusing!"
 
         model.head.decode_in_inference = False
         decoder = model.head.decode_outputs
 
-        assert os.path.exists(cfg.tensor_rt_file), "TensorRT model is not found!\n Run python3 tools/trt.py first!"
-        if cfg.tensor_rt_file is not None:
+        assert os.path.exists(
+            cfg.model.tensor_rt_file
+        ), "TensorRT model is not found!\n Run python3 tools/trt.py first!"
+        if cfg.model.tensor_rt_file is not None:
             from torch2trt import TRTModule
 
             model = TRTModule()
-            model.load_state_dict(torch.load(cfg.tensor_rt_file))
+            model.load_state_dict(torch.load(cfg.model.tensor_rt_file))
 
     # logger.info("Model Summary: {}".format(get_model_info(model, cfg.test.output_size)))
 
