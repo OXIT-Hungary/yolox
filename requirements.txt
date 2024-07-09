@@ -1,18 +1,23 @@
-# TODO: Update with exact module version
-numpy
-torch>=1.7
-opencv_python
+hydra-core
 loguru
-tqdm
-torchvision
-thop
-ninja
-tabulate
+megengine
+ninja==1.11.1.1
+numpy
+omegaconf
+onnx
+onnxruntime
+onnxsim
+openvino
 psutil
-tensorboard
-
-# verified versions
-# pycocotools corresponds to https://github.com/ppwwyyxx/cocoapi
-pycocotools>=2.0.2
-onnx>=1.13.0
-onnx-simplifier
+pycocotools
+recommonmark
+setuptools
+Sphinx
+sphinx_rtd_theme
+tabulate
+tensorrt
+thop
+torch==2.3.1
+torchvision==0.18.1
+tqdm
+wandb
